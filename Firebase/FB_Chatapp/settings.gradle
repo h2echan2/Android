@@ -1,0 +1,2 @@
+rootProject.name='FB_Chatapp'
+include ':app'
