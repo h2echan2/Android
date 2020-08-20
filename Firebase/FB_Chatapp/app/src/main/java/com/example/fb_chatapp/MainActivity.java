@@ -21,21 +21,10 @@ public class MainActivity extends AppCompatActivity {
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        Handler delayHandler = new Handler();
-
-        for(i=0;i<101;i++){
-            delayHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    progressBar.incrementProgressBy(i);
-                }
-            },3000);
-        }
-
         this.getDBInstance();
 
-        //Intent intent = new Intent(this, LoginActivity.class);
-        //startActivity(intent);
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 
     //파이어베이스 디비 가져오기.
