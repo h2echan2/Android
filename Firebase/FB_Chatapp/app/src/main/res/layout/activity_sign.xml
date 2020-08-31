@@ -54,7 +54,7 @@
         android:layout_marginRight="15dp"
         android:layout_marginBottom="374dp"
         android:text="회원가입 페이지입니다."
-        android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintBottom_toTopOf="@+id/signButton_Sign"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

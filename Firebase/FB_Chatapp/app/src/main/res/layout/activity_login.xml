@@ -29,7 +29,7 @@
         android:layout_marginLeft="32dp"
         android:layout_marginBottom="128dp"
         android:background="@drawable/common_google_signin_btn_icon_light_normal_background"
-        android:text="Sign in"
+        android:text="Sign"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/login_button"
         app:layout_constraintHorizontal_bias="0.219"
@@ -46,7 +46,7 @@
         android:layout_marginBottom="256dp"
         android:capitalize="none"
         android:text="로그인 페이지입니다."
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

@@ -42,6 +42,8 @@ public class LoginActivity extends Activity {
             public void onClick(View v) {
                 show();
             }
+
+
         });
 
         //회원가입 기능 구현 완료.
@@ -52,6 +54,7 @@ public class LoginActivity extends Activity {
                 startActivity(intent);
             }
         });
+
 
 
         //todo 로그인 기능
@@ -99,7 +102,15 @@ public class LoginActivity extends Activity {
                             String fbPw = snapshot.child("Password").getValue().toString();
                             Log.d("pwdCheck",fbPw);
                             if(fbPw.equals(Pwd)){
+                                Log.d("test",ID);
+
                                 dialog.dismiss();
+                                //id넘겨줘야함
+
+                                Intent intent1 = new Intent(getApplicationContext(), ChatActivity.class);
+                                intent1.putExtra("UserID",ID);
+                                startActivity(intent1);
+
                                 Toast.makeText(LoginActivity.this,"비밀번호 정보가 맞습니다.",Toast.LENGTH_SHORT ).show();
                             }
                         }
@@ -108,6 +119,7 @@ public class LoginActivity extends Activity {
                             Toast.makeText(LoginActivity.this,"비밀번호 정보가 틀립니다.",Toast.LENGTH_SHORT ).show();
 
                         }
+
                    }
 
                    @Override
@@ -115,6 +127,7 @@ public class LoginActivity extends Activity {
 
                    }
                });
+
 
 
 
