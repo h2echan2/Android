@@ -88,6 +88,7 @@ public class ChatListActivity extends AppCompatActivity {
 //따라서 Adapter 기능도 확장해야함.
 //Adapter를 새롭게 구현할 때 안드로이드 SDK에서 제공하는 Adpter중 어떤 Adapter 중 어떤 Adapter 클래스를 부모로 사용할지 결정
 //해야함. 보통 Base나 ArrayAdapter 사용.
+
 class ListAdapter extends BaseAdapter{
     Context context;
     List<Chatroom> datas;
