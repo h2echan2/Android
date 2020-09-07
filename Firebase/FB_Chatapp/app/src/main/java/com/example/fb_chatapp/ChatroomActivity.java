@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
@@ -25,6 +26,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -38,13 +40,15 @@ import java.util.ArrayList;
 
 public class ChatroomActivity extends AppCompatActivity {
 
-    ListView chat_view;
+    RecyclerView chat_view;
     EditText chat_edit;
     Button chat_send;
     ImageView Profile1;
     Drawable profileImg1;
     Drawable profileImg2;
+    String userID;
 
+    private ArrayList<ChatData> datalist = new ArrayList<ChatData>();
 
     FirebaseDatabase FbDB = FirebaseDatabase.getInstance();
     DatabaseReference DBref = FbDB.getReference();
@@ -55,14 +59,14 @@ public class ChatroomActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatroom);
 
-        chat_view = (ListView) findViewById(R.id.chat_view);
+        chat_view = (RecyclerView) findViewById(R.id.chat_view);
         chat_edit = (EditText) findViewById(R.id.chat_edit);
         chat_send = (Button) findViewById(R.id.chat_sent);
         Profile1 = (ImageView) findViewById(R.id.Userprofile_img);
 
 
         Intent intent = getIntent();
-        final String userID = intent.getExtras().getString("userID");
+        userID = intent.getExtras().getString("userID");
         String roomID = intent.getExtras().getString("roomID");
         final String roomName = intent.getExtras().getString("roomName");
         profileImg1 = getResources().getDrawable(R.drawable.cat1);
@@ -70,10 +74,12 @@ public class ChatroomActivity extends AppCompatActivity {
         //기본적으로 DB의 메세지는 false;
         final boolean isMymessage = false;
 
-
-        Log.d("test0","test0");
         openChat(roomName);
-        Log.d("test1","test1");
+
+        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+
+        chat_view.setLayoutManager(manager);
+
         chat_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,24 +93,29 @@ public class ChatroomActivity extends AppCompatActivity {
         });
     }
 
-private void addMessage(DataSnapshot dataSnapshot, CustomAdapter adapter){
-    ChatData chatdata = dataSnapshot.getValue(ChatData.class);
-    chatdata.setIcon(profileImg1);
-    adapter.add(chatdata);
-    adapter.notifyDataSetChanged();
-}
-
 private void openChat(String chatName){
     //final ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, android.R.id.text1);
-
-    final CustomAdapter adapter = new CustomAdapter();
-
+    final Myadapter adapter = new Myadapter(datalist);
     chat_view.setAdapter(adapter);
 
     DBref.child("Chat_Message").child(chatName).addChildEventListener(new ChildEventListener() {
         @Override
         public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-            addMessage(snapshot, adapter);
+            ChatData chatdata = snapshot.getValue(ChatData.class);
+            int type;
+            if(chatdata.getUserID().equals(userID)){
+
+                type = ViewType.Right_contents;
+                chatdata.setIcon(profileImg1);
+                chatdata.setMydata(true);
+            }
+            else{
+                type = ViewType.Left_contents;
+                chatdata.setIcon(profileImg2);
+            }
+            datalist.add(chatdata);
+            adapter.addItem(datalist);
+            adapter.notifyDataSetChanged();
         }
 
         @Override
@@ -129,6 +140,101 @@ private void openChat(String chatName){
     });
 }
 
+public class Myadapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+
+        private ArrayList<ChatData> chatDataArrayList = null;
+
+        Myadapter(ArrayList<ChatData> datalist){
+            chatDataArrayList = datalist;
+        }
+
+        public class LeftViewHolder extends RecyclerView.ViewHolder{
+            TextView content;
+            TextView name;
+            ImageView image;
+
+            public LeftViewHolder(@NonNull View itemView) {
+                super(itemView);
+
+                content = itemView.findViewById(R.id.comment_leftform);
+                name =  itemView.findViewById(R.id.userID_leftform);
+                image = itemView.findViewById(R.id.Userprofile_img);
+            }
+        }
+
+        public class RightViewHolder extends RecyclerView.ViewHolder{
+            TextView content;
+            TextView name;
+            ImageView image;
+
+            public RightViewHolder(@NonNull View itemView) {
+                super(itemView);
+                content = itemView.findViewById(R.id.comment_rightform);
+                name = itemView.findViewById(R.id.userID_rightform);
+                image = itemView.findViewById(R.id.Userprofile_img_rightform);
+            }
+        }
+
+    //뷰홀더 객체 생성.
+    @NonNull
+   @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view;
+        Context context = parent.getContext();
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        if(viewType == ViewType.Left_contents){
+            Log.d("viewtype", "left");
+            view = inflater.inflate(R.layout.chat_leftform, parent, false);
+            return new LeftViewHolder(view);
+        }
+        else{
+            view = inflater.inflate(R.layout.chat_rightform, parent, false);
+            Log.d("viewtype", "right");
+            return new RightViewHolder(view);
+        }
+    }
+
+    //데이터를 뷰홀더에 바인딩.
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if(holder instanceof LeftViewHolder){
+            ((LeftViewHolder) holder).content.setText(chatDataArrayList.get(position).getMessage());
+            ((LeftViewHolder) holder).name.setText(chatDataArrayList.get(position).getUserID());
+            ((LeftViewHolder) holder).image.setImageDrawable(chatDataArrayList.get(position).getIcon());
+        }
+        else{
+            ((RightViewHolder) holder).content.setText(chatDataArrayList.get(position).getMessage());
+            ((RightViewHolder) holder).name.setText(chatDataArrayList.get(position).getUserID());
+            ((RightViewHolder) holder).image.setImageDrawable(chatDataArrayList.get(position).getIcon());
+        }
+    }
+
+    @Override
+    public  int getItemViewType(int position){
+            if(chatDataArrayList.get(position).getMydata() == false){
+                return ViewType.Right_contents;
+            }
+            else
+                return ViewType.Left_contents;
+    }
+
+    @Override
+    public int getItemCount() {
+        return chatDataArrayList.size();
+    }
+
+    public void addItem(ArrayList<ChatData> item){
+            chatDataArrayList = item;
+    }
+}
+
+public class ViewType{
+        public static final int Left_contents = 0;
+        public static  final int Right_contents = 1;
+}
+
+/*
 public class CustomAdapter extends BaseAdapter{
 
         //채팅을 세트로 담기위한 어레이
@@ -187,4 +293,5 @@ public class CustomAdapter extends BaseAdapter{
         Chatdata.add(chatdata);
     }
 }
+*/
 }
