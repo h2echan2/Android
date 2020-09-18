@@ -117,21 +117,13 @@ public class LoginActivity extends Activity {
                         else{
                             dialog.dismiss();
                             Toast.makeText(LoginActivity.this,"비밀번호 정보가 틀립니다.",Toast.LENGTH_SHORT ).show();
-
                         }
-
                    }
-
                    @Override
                    public void onCancelled(@NonNull DatabaseError error) {
 
                    }
                });
-
-
-
-
-
 
             }
         });

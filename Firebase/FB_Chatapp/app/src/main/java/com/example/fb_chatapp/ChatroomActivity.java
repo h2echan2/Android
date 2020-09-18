@@ -102,15 +102,12 @@ private void openChat(String chatName){
         @Override
         public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
             ChatData chatdata = snapshot.getValue(ChatData.class);
-            int type;
-            if(chatdata.getUserID().equals(userID)){
 
-                type = ViewType.Right_contents;
+            if(chatdata.getUserID().equals(userID)){
                 chatdata.setIcon(profileImg1);
                 chatdata.setMydata(true);
             }
             else{
-                type = ViewType.Left_contents;
                 chatdata.setIcon(profileImg2);
             }
             datalist.add(chatdata);

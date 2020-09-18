@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 public class ChatActivity extends AppCompatActivity {
 
 
-
+    User loginUser = new User();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,7 @@ public class ChatActivity extends AppCompatActivity {
         Button Roomlist = (Button) findViewById(R.id.ChatlistButton_Chat);
         Button RoomIn = (Button) findViewById(R.id.ChatinButton_Chat);
         TextView ChatID = (TextView) findViewById(R.id.UserID_Chat);
+        Button Userlist = (Button) findViewById(R.id.UserList_Chat);
         final TextView ChatName = (TextView) findViewById(R.id.UserName_chat);
 
         //todo FirebaseDB에서 유저네임 아이디 가져와서 텍스트보여주기
@@ -49,6 +51,13 @@ public class ChatActivity extends AppCompatActivity {
                 if(snapshot.getChildrenCount()>0){
                     String name = snapshot.child("username").getValue().toString();
                     ChatName.setText("Name: "+ name);
+
+                    loginUser.setID(snapshot.child("ID").getValue().toString());
+                    loginUser.setPassword(snapshot.child("Password").getValue().toString());
+                    loginUser.setPrivateKey(snapshot.child("privateKey").getValue().toString());
+                    loginUser.setPublicKey(snapshot.child("publicKey").getValue().toString());
+                    loginUser.setUsername(snapshot.child("username").getValue().toString());
+
                 }
             }
 
@@ -76,6 +85,22 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+        //todo. 유저목록 버튼 1대1 대화메시지 구현을 위해 생성.
+        Userlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(getApplicationContext(), UserListActivity.class);
+
+                intent.putExtra("LoginUserID", loginUser.getID());
+                intent.putExtra("LoginUserPrivateKey", loginUser.getPrivateKey());
+                intent.putExtra("LoginUserPublicKey", loginUser.getPublicKey());
+                intent.putExtra("LoginUserPassword", loginUser.getPassword());
+                intent.putExtra("LoginUserName", loginUser.getUsername());
+
+                startActivity(intent);
+            }
+        });
     }
     public void show(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
